@@ -10,15 +10,18 @@ import java.util.EnumSet;
 
 public class Main {
 	public static void main(String[] args) {
-		String discordApiKey = "";
+		String discordApiKey;
 		File file = new File("discordApiKey.txt");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = "";
+			String line;
+			StringBuilder sb = new StringBuilder();
 			while((line = reader.readLine()) != null) {
-				discordApiKey += line;
+				sb.append(line);
 			}
+			discordApiKey = sb.toString();
 		} catch (FileNotFoundException e) {
+			System.out.println("discordApiKey.txt is missing!");
 			e.printStackTrace();
 			return;
 		} catch (IOException e) {
@@ -48,9 +51,7 @@ public class Main {
 			// Set activity (like "playing Something")
 			//builder.setActivity(Activity.watching("TV"));
 
-		} catch (LoginException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+		} catch (LoginException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
