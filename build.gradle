@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'de.woogyface'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'net.dv8tion:JDA:4.1.1_101'
+    implementation name: 'sqlite-jdbc-3.30.1'
+}
