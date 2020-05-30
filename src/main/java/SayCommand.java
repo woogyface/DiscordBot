@@ -20,13 +20,13 @@ public class SayCommand extends Command {
 
 		if (event.isFromType(ChannelType.TEXT))
 		{
-			if(msg.startsWith("!say")) {
+			if(command.equals("!say")) {
 				sendMessage(channel, paramsRaw);
 			}
 		}
 		else if (event.isFromType(ChannelType.PRIVATE)) //If this message was sent to a PrivateChannel
 		{
-			if(msg.startsWith("!say")) {
+			if(command.equals("!say")) {
 				sendPrivateMessage(user, paramsRaw);
 			}
 		}

@@ -18,10 +18,11 @@ public class RegisterCommand extends Command {
 
 		String msg = message.getContentDisplay();
 		String[] params = msg.split(" ");
+		String command = params[0];
 
 		if (event.isFromType(ChannelType.TEXT))
 		{
-			if (msg.equals("!register")) {
+			if (command.equals("!register")) {
 				if(BotDB.getInstance().registerUser(user, UserRole.user)) {
 					sendMessage(channel, user + " You are now: " + BotDB.getInstance().getUserRole(user));
 				}
