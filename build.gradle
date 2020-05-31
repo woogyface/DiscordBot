@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
     jcenter()
     flatDir {
-        dirs 'lib'
+        dirs 'libs'
     }
 }
 
