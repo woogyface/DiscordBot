@@ -11,8 +11,8 @@ import java.util.EnumSet;
 public class Main {
 	public static void main(String[] args) {
 		String discordApiKey;
-		File file = new File("discordApiKey.txt");
 		try {
+			File file = new File("discordApiKey.txt");
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line;
 			StringBuilder sb = new StringBuilder();

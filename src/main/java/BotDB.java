@@ -18,6 +18,92 @@ public class BotDB {
 		SQLiteDB.getInstance().disconnect();
 	}
 
+	public void createBankTable() {
+		SQLiteDB.getInstance().connect(db);
+		SQLiteDB.getInstance().execute("CREATE TABLE IF NOT EXISTS \"bank\" ("+
+				"\"userid\"	INTEGER PRIMARY KEY,"+
+				"\"money\" INTEGER," +
+				"\"debt\" INTEGER);"
+		);
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public void setMoney(User user, int money) {
+		SQLiteDB.getInstance().connect(db);
+		int affected = SQLiteDB.getInstance().executeUpdate(
+				"UPDATE bank SET money = ? WHERE name = (SELECT id FROM users WHERE name = ?)",
+				money,
+				user.getAsTag()
+		);
+
+		if(affected == 0) {
+			SQLiteDB.getInstance().execute(
+					"INSERT INTO bank (userid, money, debt) VALUES (?,?,?)",
+					user.getAsTag(),
+					money, 0
+			);
+		}
+
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public void setDebt(User user, int debt) {
+		SQLiteDB.getInstance().connect(db);
+		int affected = SQLiteDB.getInstance().executeUpdate(
+				"UPDATE bank SET debt = ? WHERE name = (SELECT id FROM users WHERE name = ?)",
+				debt,
+				user.getAsTag()
+		);
+
+		if(affected == 0) {
+			SQLiteDB.getInstance().execute(
+					"INSERT INTO bank (userid, money, debt) VALUES (?,?,?)",
+					user.getAsTag(),
+					0, debt
+			);
+		}
+
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public int getMoney(User user) {
+		int money = 0;
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT money FROM bank WHERE userid = (SELECT id FROM users WHERE name = ?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				money = set.getInt("money");
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		SQLiteDB.getInstance().disconnect();
+
+		return money;
+	}
+
+	public int getDebt(User user) {
+		int debt = 0;
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT debt FROM bank WHERE userid = (SELECT id FROM users WHERE name = ?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				debt = set.getInt("debt");
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		SQLiteDB.getInstance().disconnect();
+
+		return debt;
+	}
+
 	public void createUserTable() {
 		SQLiteDB.getInstance().connect(db);
 		SQLiteDB.getInstance().execute("CREATE TABLE IF NOT EXISTS \"users\" ("+
