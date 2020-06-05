@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 public class SlotsCommand extends Command {
 	@Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+
 		User user = event.getAuthor();
 		if(user.isBot())
 			return;
@@ -24,7 +25,34 @@ public class SlotsCommand extends Command {
 		if (event.isFromType(ChannelType.TEXT))
 		{
 			if(command.equals("!slots")) {
-				sendMessage(channel, paramsRaw);
+				GameSlots slots = new GameSlots();
+				if(params.length > 1) {
+					try {
+						int amount = Integer.parseInt(params[1]);
+						SlotsResult result = slots.roll(amount);
+						StringBuilder sb = new StringBuilder()
+								.append(result.getWheels().get(0))
+								.append(" | ")
+								.append(result.getWheels().get(1))
+								.append(" | ")
+								.append(result.getWheels().get(2))
+								.append(" - ");
+
+						if(result.hasWon()) {
+							sb.append("Du hast ")
+									.append(result.getWinAmount())
+									.append(" :euro: ")
+									.append(" gewonnen.");
+						}
+						else
+							sb.append("Du hast verloren.");
+
+						sendMessage(channel, sb.toString());
+					} catch (NumberFormatException e) {
+						sendMessage(channel, params[1] + " ist kein möglicher Einsatz.");
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}

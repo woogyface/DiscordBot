@@ -1,12 +1,8 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.util.EnumSet;
 
 public class Main {
 	public static void main(String[] args) {
@@ -37,7 +33,8 @@ public class Main {
 				.addEventListeners(
 						new SayCommand(),
 						new RegisterCommand(),
-						new RoleCommand()
+						new RoleCommand(),
+						new SlotsCommand()
 				)
 				.build();
 
