@@ -30,13 +30,14 @@ public class SlotsCommand extends Command {
 					try {
 						int amount = Integer.parseInt(params[1]);
 						SlotsResult result = slots.roll(amount);
-						StringBuilder sb = new StringBuilder()
-								.append(result.getWheels().get(0))
-								.append(" | ")
-								.append(result.getWheels().get(1))
-								.append(" | ")
-								.append(result.getWheels().get(2))
-								.append(" - ");
+						StringBuilder sb = new StringBuilder();
+						for(int i = 0; i < result.getWheels().size(); i++) {
+							sb.append(result.getWheels().get(i));
+							if(i != result.getWheels().size() - 1) {
+								sb.append(" | ");
+							}
+						}
+						sb.append(" - ");
 
 						if(result.hasWon()) {
 							sb.append("Du hast ")

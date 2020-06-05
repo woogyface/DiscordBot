@@ -40,43 +40,46 @@ public class GameSlots {
             wheels.add(wheel.get(r.nextInt(wheel.size())));
         }
 
-        List<String> wheelsSorted = List.copyOf(wheels);
+        //wheels.add(":strawberry:");
+        //wheels.add(":apple:");
+        //wheels.add(":apple:");
+        //wheels.add(":apple:");
+        //wheels.add(":tangerine:");
+
+        List<String> wheelsSorted = new ArrayList<>(List.copyOf(wheels));
         Collections.sort(wheelsSorted);
         boolean hasWon = false;
         boolean bonus = false;
-        String previous = wheelsSorted.get(0);
-        int count = 0;
+        int win = 0;
+        List<String> alreadyChecked = new ArrayList<>();
         for(int i = 0; i < wheelsSorted.size(); i++) {
             String check = wheelsSorted.get(i);
-            for(int j = 1; j < wheelsSorted.size(); j++) {
-                if (wheelsSorted.get(j).equals(check)) {
+            int count = 1;
+            for(int j = i + 1; j < wheelsSorted.size(); j++) {
+                String next = wheelsSorted.get(j);
+                if (next.equals(check)) {
                     count++;
                     i = j;
                 }
-            }
+                else continue;
 
-            if (count >= minWheels) {
-                hasWon = true;
-                if (count == numWheels) {
-                    bonus = true;
+                if(count >= minWheels) {
+                    if(!alreadyChecked.contains(next)) {
+                        int index = emotes.indexOf(check);
+                        win += bet * winMultiplier[index];
+
+                        hasWon = true;
+                        alreadyChecked.add(check);
+                    }
                 }
-                break;
+            }
+
+            if (count == numWheels) {
+                win *= 2;
+
+                bonus = true;
             }
         }
-
-        /*
-        boolean hasWon = false;
-        if(index != -1) {
-            win = bet * winMultiplier[index];
-            hasWon = true;
-        }
-
-        boolean bonus = false;
-        if(wheels.get(0).equals(wheels.get(1)) && wheels.get(0).equals(wheels.get(2))) {
-            win *= 2;
-            bonus = true;
-        }
-        */
 
         return new SlotsResult(wheels, win, hasWon, bonus);
     }
