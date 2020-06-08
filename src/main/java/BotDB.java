@@ -28,6 +28,145 @@ public class BotDB {
 		SQLiteDB.getInstance().disconnect();
 	}
 
+	public void setDebt(User user, int debt) {
+		SQLiteDB.getInstance().connect(db);
+		int affected = SQLiteDB.getInstance().executeUpdate(
+				"UPDATE bank SET debt=? WHERE name=(SELECT id FROM users WHERE name=?)",
+				debt,
+				user.getAsTag()
+		);
+
+		if(affected == 0) {
+			SQLiteDB.getInstance().execute(
+					"INSERT INTO bank (userid, money, debt) VALUES (?,?)",
+					user.getAsTag(),
+					debt
+			);
+		}
+
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public int getDebt(User user) {
+		int debt = 0;
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT debt FROM bank WHERE userid=(SELECT id FROM users WHERE name=?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				debt = set.getInt("debt");
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		SQLiteDB.getInstance().disconnect();
+
+		return debt;
+	}
+
+	public void addDebt(User user, int debt) {
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT debt FROM bank WHERE userid=(SELECT id FROM users WHERE name=?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				debt += set.getInt("debt");
+
+				int affected = SQLiteDB.getInstance().executeUpdate(
+						"UPDATE bank SET debt=? WHERE name=(SELECT id FROM users WHERE name=?)",
+						debt,
+						user.getAsTag()
+				);
+
+				if(affected == 0) {
+					SQLiteDB.getInstance().execute(
+							"INSERT INTO bank (userid, money, debt) VALUES (?,?)",
+							user.getAsTag(),
+							debt
+					);
+				}
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public void payDebt(User user, int amount) {
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT money, debt FROM bank WHERE userid=(SELECT id FROM users WHERE name=?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				int money = set.getInt("money");
+				int debt = set.getInt("debt");
+				if(debt - amount < 0)
+					amount = debt;
+				if(money - amount < 0)
+					amount = money;
+
+				debt -= amount;
+				money -= amount;
+
+				int affected = SQLiteDB.getInstance().executeUpdate(
+						"UPDATE bank SET debt=?, money=? WHERE name = (SELECT id FROM users WHERE name=?)",
+						debt,
+						money,
+						user.getAsTag()
+				);
+
+				if(affected == 0) {
+					SQLiteDB.getInstance().execute(
+							"INSERT INTO bank (userid, money, debt) VALUES (?,?,?)",
+							user.getAsTag(),
+							money, debt
+					);
+				}
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		SQLiteDB.getInstance().disconnect();
+	}
+
+	public void addMoney(User user, int amount) {
+		SQLiteDB.getInstance().connect(db);
+		ResultSet set = SQLiteDB.getInstance().executeQuery(
+				"SELECT money FROM bank WHERE userid=(SELECT id FROM users WHERE name=?)",
+				user.getAsTag()
+		);
+		try {
+			if (set.next()) {
+				int money = set.getInt("money") + amount;
+
+				int affected = SQLiteDB.getInstance().executeUpdate(
+						"UPDATE bank SET money=? WHERE name=(SELECT id FROM users WHERE name=?)",
+						money,
+						user.getAsTag()
+				);
+
+				if(affected == 0) {
+					SQLiteDB.getInstance().execute(
+							"INSERT INTO bank (userid, money) VALUES (?,?)",
+							user.getAsTag(),
+							money
+					);
+				}
+			}
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		SQLiteDB.getInstance().disconnect();
+	}
+
 	public void setMoney(User user, int money) {
 		SQLiteDB.getInstance().connect(db);
 		int affected = SQLiteDB.getInstance().executeUpdate(
@@ -41,25 +180,6 @@ public class BotDB {
 					"INSERT INTO bank (userid, money, debt) VALUES (?,?,?)",
 					user.getAsTag(),
 					money, 0
-			);
-		}
-
-		SQLiteDB.getInstance().disconnect();
-	}
-
-	public void setDebt(User user, int debt) {
-		SQLiteDB.getInstance().connect(db);
-		int affected = SQLiteDB.getInstance().executeUpdate(
-				"UPDATE bank SET debt = ? WHERE name = (SELECT id FROM users WHERE name = ?)",
-				debt,
-				user.getAsTag()
-		);
-
-		if(affected == 0) {
-			SQLiteDB.getInstance().execute(
-					"INSERT INTO bank (userid, money, debt) VALUES (?,?,?)",
-					user.getAsTag(),
-					0, debt
 			);
 		}
 
@@ -83,25 +203,6 @@ public class BotDB {
 		SQLiteDB.getInstance().disconnect();
 
 		return money;
-	}
-
-	public int getDebt(User user) {
-		int debt = 0;
-		SQLiteDB.getInstance().connect(db);
-		ResultSet set = SQLiteDB.getInstance().executeQuery(
-				"SELECT debt FROM bank WHERE userid = (SELECT id FROM users WHERE name = ?)",
-				user.getAsTag()
-		);
-		try {
-			if (set.next()) {
-				debt = set.getInt("debt");
-			}
-		} catch (SQLException throwables) {
-			throwables.printStackTrace();
-		}
-		SQLiteDB.getInstance().disconnect();
-
-		return debt;
 	}
 
 	public void createUserTable() {

@@ -25,30 +25,16 @@ public class SlotsCommand extends Command {
 		if (event.isFromType(ChannelType.TEXT))
 		{
 			if(command.equals("!slots")) {
-				GameSlots slots = new GameSlots();
 				if(params.length > 1) {
 					try {
 						int amount = Integer.parseInt(params[1]);
-						SlotsResult result = slots.roll(amount);
-						StringBuilder sb = new StringBuilder();
-						for(int i = 0; i < result.getWheels().size(); i++) {
-							sb.append(result.getWheels().get(i));
-							if(i != result.getWheels().size() - 1) {
-								sb.append(" | ");
-							}
+						int money = BotDB.getInstance().getMoney(user);
+						if(money < amount) {
+							sendMessage(channel, user.getAsMention() + ", du hast nicht genügend :euro:");
+							return;
 						}
-						sb.append(" - ");
-
-						if(result.hasWon()) {
-							sb.append("Du hast ")
-									.append(result.getWinAmount())
-									.append(" :euro: ")
-									.append(" gewonnen.");
-						}
-						else
-							sb.append("Du hast verloren.");
-
-						sendMessage(channel, sb.toString());
+						String winMsg = roll(user, amount);
+						sendMessage(channel, winMsg);
 					} catch (NumberFormatException e) {
 						sendMessage(channel, params[1] + " ist kein möglicher Einsatz.");
 						e.printStackTrace();
@@ -56,5 +42,31 @@ public class SlotsCommand extends Command {
 				}
 			}
 		}
+	}
+
+	private String roll(User user, int bet) {
+		GameSlots slots = new GameSlots();
+		SlotsResult result = slots.roll(bet);
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < result.getWheels().size(); i++) {
+			sb.append(result.getWheels().get(i));
+			if(i != result.getWheels().size() - 1) {
+				sb.append(" | ");
+			}
+		}
+		sb.append(" - ");
+
+		if(result.hasWon()) {
+			sb.append("Du hast ")
+					.append(result.getWinAmount())
+					.append(" :euro: ")
+					.append(" gewonnen.");
+
+			BotDB.getInstance().addMoney(user, result.getWinAmount());
+		}
+		else
+			sb.append("Du hast verloren.");
+
+		return sb.toString();
 	}
 }

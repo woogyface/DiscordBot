@@ -27,6 +27,7 @@ public class Main {
 
 		BotDB.getInstance().createDB();
 		BotDB.getInstance().createUserTable();
+		BotDB.getInstance().createBankTable();
 
 		try {
 			JDA jda = new JDABuilder(discordApiKey)
