@@ -25,17 +25,15 @@ public class BankCommand extends Command {
             if (command.equals("!bank")) {
                 if(params.length > 1) {
                     switch (params[1].toLowerCase()) {
-                        case "money": {
+                        case "geld", "money" -> {
                             int money = BotDB.getInstance().getMoney(user);
                             sendMessage(channel, user.getAsMention() + ", du hast " + money + " :euro:");
-                            break;
                         }
-                        case "debt": {
+                        case "schulden", "debt" -> {
                             int debt = BotDB.getInstance().getDebt(user);
                             sendMessage(channel, user.getAsMention() + ", du schuldest " + debt + " :euro:");
-                            break;
                         }
-                        case "credit": {
+                        case "kredit", "credit" -> {
                             int debt = BotDB.getInstance().getDebt(user);
                             int money = BotDB.getInstance().getMoney(user);
                             if (debt > 0 && money > 0) {
@@ -45,9 +43,8 @@ public class BankCommand extends Command {
                                 BotDB.getInstance().addMoney(user, 100);
                                 sendMessage(channel, user.getAsMention() + ", du hast 100 :euro: Kredit bekommen.");
                             }
-                            break;
                         }
-                        case "pay":
+                        case "zahlen", "pay" -> {
                             if (params.length > 2) {
                                 try {
                                     int amount = Integer.parseInt(params[2]);
@@ -62,7 +59,7 @@ public class BankCommand extends Command {
                                     sendMessage(channel, user.getAsMention() + ", das war eine ungültige Eingabe");
                                 }
                             }
-                            break;
+                        }
                     }
                 }
             }
