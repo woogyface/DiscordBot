@@ -33,6 +33,9 @@ public class SlotsCommand extends Command {
 							sendMessage(channel, user.getAsMention() + ", du hast nicht genügend :euro:");
 							return;
 						}
+						else {
+							BotDB.getInstance().setMoney(user, money - amount);
+						}
 						String winMsg = roll(user, amount);
 						sendMessage(channel, winMsg);
 					} catch (NumberFormatException e) {

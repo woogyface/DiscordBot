@@ -25,10 +25,11 @@ public class BankCommand extends Command {
             if (command.equals("!bank")) {
                 if(params.length > 1) {
                     switch (params[1].toLowerCase()) {
-                        case "money":
+                        case "money": {
                             int money = BotDB.getInstance().getMoney(user);
                             sendMessage(channel, user.getAsMention() + ", du hast " + money + " :euro:");
                             break;
+                        }
                         case "debt": {
                             int debt = BotDB.getInstance().getDebt(user);
                             sendMessage(channel, user.getAsMention() + ", du schuldest " + debt + " :euro:");
@@ -36,7 +37,8 @@ public class BankCommand extends Command {
                         }
                         case "credit": {
                             int debt = BotDB.getInstance().getDebt(user);
-                            if (debt > 0) {
+                            int money = BotDB.getInstance().getMoney(user);
+                            if (debt > 0 && money > 0) {
                                 sendMessage(channel, user.getAsMention() + ", du hast noch " + debt + " :euro: Schulden. Kredit verweigert.");
                             } else {
                                 BotDB.getInstance().addDebt(user, 100);
