@@ -35,6 +35,7 @@ public class Main {
 						new SayCommand(),
 						new RegisterCommand(),
 						new RoleCommand(),
+						new BankCommand(),
 						new SlotsCommand()
 				)
 				.build();

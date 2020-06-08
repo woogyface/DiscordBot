@@ -92,6 +92,45 @@ public class SQLiteDB {
 		return 0;
 	}
 
+	public boolean next(ResultSet set) {
+		try {
+			return set.next();
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+		return false;
+	}
+
+	public int getInt(ResultSet set, String column, int defaultValue) {
+		try {
+			return set.getInt(column);
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		return defaultValue;
+	}
+
+	public boolean getBoolean(ResultSet set, String column, boolean defaultValue) {
+		try {
+			return set.getBoolean(column);
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		return defaultValue;
+	}
+
+	public String getString(ResultSet set, String column, String defaultValue) {
+		try {
+			return set.getString(column);
+		} catch (SQLException throwables) {
+			throwables.printStackTrace();
+		}
+
+		return defaultValue;
+	}
+
 	private void addParams(PreparedStatement stmnt, Object... params) {
 		for(int i = 0; i < params.length; i++) {
 			try {
