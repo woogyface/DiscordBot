@@ -3,6 +3,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 
 import javax.annotation.Nonnull;
 import javax.tools.JavaCompiler;
@@ -11,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -21,14 +24,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
-public class Discord {
-    public Discord() {
-        System.out.println("world");
-    }
-}
-*/
-
 public class JavaCommand extends Command {
     public JavaCommand(String... whitelistChannels) {
         super(whitelistChannels);
@@ -36,7 +31,7 @@ public class JavaCommand extends Command {
 
     private Path saveSource(String source) throws IOException {
         String tmpProperty = System.getProperty("java.io.tmpdir");
-        Path sourcePath = Paths.get(tmpProperty, "Discord.java");
+        Path sourcePath = Paths.get(tmpProperty, "JavaCommandClass.java");
         Files.writeString(sourcePath, source);
         return sourcePath;
     }
@@ -44,29 +39,34 @@ public class JavaCommand extends Command {
     private Path compileSource(Path javaFile) {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         compiler.run(null, null, null, javaFile.toFile().getAbsolutePath());
-        return javaFile.getParent().resolve("Discord.class");
+        return javaFile.getParent().resolve("JavaCommandClass.class");
     }
 
-    private void runClass(Path javaClass)
+    private Exception runClass(Path javaClass)
             throws MalformedURLException, ClassNotFoundException, IllegalAccessException, InstantiationException {
         URL classUrl = javaClass.getParent().toFile().toURI().toURL();
         URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{classUrl});
-        Class<?> clazz = Class.forName("Discord", true, classLoader);
-        PrintStream defaultOut = System.out;
+        Class<?> clazz = Class.forName("JavaCommandClass", true, classLoader);
         try {
+            Constructor constructor = clazz.getConstructor();
+            //Object obj = constructor.newInstance();
+
+            PrintStream defaultOut = System.out;
             System.setOut(new PrintStream(new File("output.txt")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            constructor.newInstance();
+            System.setOut(defaultOut);
+
+        } catch (NoSuchMethodException | InvocationTargetException | FileNotFoundException e) {
+            return e;
         }
-        clazz.newInstance();
-        System.setOut(defaultOut);
+        return null;
     }
 
     private void printOutput(MessageChannel channel) {
         try {
             List<String> lines = Files.readAllLines(Paths.get("output.txt"));
-            if(lines.size() > 50) {
-                sendMessage(channel, "Output ist zu lang. Max 50 Zeilen");
+            if(lines.size() > 10 || (lines.size() > 0 && lines.get(0).length() > 100)) {
+                channel.sendFile(new File("output.txt")).queue();
                 return;
             }
 
@@ -101,16 +101,17 @@ public class JavaCommand extends Command {
                 if(matcher.find()) {
                     String source = matcher.group("source");
                     StringBuilder sb = new StringBuilder();
-                    sb.append("public class Discord {");
-                    sb.append("public Discord() {");
+                    sb.append("public class JavaCommandClass {\n");
                     sb.append(source);
-                    sb.append("}}");
+                    sb.append("\n}");
                     try {
                         Path javaFile = saveSource(sb.toString());
                         Path classFile = compileSource(javaFile);
-                        runClass(classFile);
-
-                        printOutput(channel);
+                        Exception e = runClass(classFile);
+                        if(e != null)
+                            sendMessage(channel, e.getMessage());
+                        else
+                            printOutput(channel);
                     } catch (IOException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
                         sendMessage(channel, "Compile Error:```"+e.getMessage()+"```");
                         e.printStackTrace();
