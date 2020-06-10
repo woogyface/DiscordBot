@@ -6,11 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Rest {
-	public static String Get(String url) {
+	public static RestResponse Get(String url) {
 		BufferedReader reader = null;
 		StringBuilder sb = null;
+		String response = null;
+		Map<String, List<String>> headers = new HashMap<>();
 		try {
 			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
 			connection.setRequestMethod("GET");
@@ -22,6 +27,8 @@ public class Rest {
 			while((input = reader.readLine()) != null) {
 				sb.append(input);
 			}
+			response = sb.toString();
+			headers = connection.getHeaderFields();
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -34,12 +41,14 @@ public class Rest {
 			}
 		}
 
-		return sb != null ? sb.toString() : "";
+		return new RestResponse(response, headers);
 	}
 
-	public static String Post(String url, String data) {
+	public static RestResponse Post(String url, String data) {
 		BufferedReader reader = null;
 		StringBuilder sb = null;
+		String response = null;
+		Map<String, List<String>> headers = new HashMap<>();
 		try {
 			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
 			connection.setRequestMethod("POST");
@@ -57,6 +66,8 @@ public class Rest {
 			while((input = reader.readLine()) != null) {
 				sb.append(input);
 			}
+			response = sb.toString();
+			headers = connection.getHeaderFields();
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -69,6 +80,6 @@ public class Rest {
 			}
 		}
 
-		return sb != null ? sb.toString() : "";
+		return new RestResponse(response, headers);
 	}
 }
