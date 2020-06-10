@@ -20,13 +20,14 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaCommand extends Command {
-    public JavaCommand(String... whitelistChannels) {
-        super(whitelistChannels);
+    public JavaCommand() {
+        super(Arrays.asList("720163524822958100"));
     }
 
     private Path saveSource(String source) throws IOException {

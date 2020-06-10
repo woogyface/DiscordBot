@@ -5,15 +5,19 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SlotsCommand extends Command {
-    public SlotsCommand(String... whitelistChannels) {
-		super(whitelistChannels);
+    public SlotsCommand() {
+		super(Arrays.asList("720163487351046195"));
 	}
 
     @Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
-
+		if(!canRunCommand(event))
+			return;
 		User user = event.getAuthor();
 		if(user.isBot())
 			return;

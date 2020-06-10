@@ -4,11 +4,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.List;
 
 public class RoleCommand extends Command {
-    public RoleCommand(String... whitelistChannels) {
-		super(whitelistChannels);
+    public RoleCommand() {
+		super(Arrays.asList("720163524822958100"));
 	}
 
     @Override

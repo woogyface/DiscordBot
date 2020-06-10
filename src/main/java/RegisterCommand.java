@@ -5,10 +5,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class RegisterCommand extends Command {
-	public RegisterCommand(String... whitelistChannels) {
-		super(whitelistChannels);
+	public RegisterCommand() {
+		super(Arrays.asList("720163524822958100"));
 	}
 
 	@Override

@@ -12,14 +12,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Command extends ListenerAdapter {
-	private String[] whitelistChannels;
+	private List<String> whitelistChannels = new ArrayList<>();
+	private List<UserRole> whitelistRoles = new ArrayList<>();
 
-	public Command(String... whitelistChannels) {
+	public List<String> getWhitelistChannels() {return whitelistChannels;}
+	public List<UserRole> getWhitelistRoles() {return whitelistRoles;}
+
+	public void addWhitelistChannel(String id) {
+		if(!whitelistChannels.contains(id))
+			whitelistChannels.add(id);
+	}
+
+	public void removeWhitelistChannel(String id) {
+		if(whitelistChannels.contains(id))
+			whitelistChannels.remove(id);
+	}
+
+	public void addRole(UserRole role) {
+		if(!whitelistRoles.contains(role))
+			whitelistRoles.add(role);
+	}
+
+	public void removeRole(UserRole role) {
+		if(whitelistRoles.contains(role))
+			whitelistRoles.remove(role);
+	}
+
+	public Command(List<UserRole> whitelistRoles, List<String> whitelistChannels) {
+		this.whitelistRoles = whitelistRoles;
+		this.whitelistChannels = whitelistChannels;
+	}
+
+	public Command(List<String> whitelistChannels) {
+		this.whitelistRoles.add(UserRole.all);
 		this.whitelistChannels = whitelistChannels;
 	}
 
 	public Command() {
-		this.whitelistChannels = null;
+		this.whitelistRoles.add(UserRole.all);
+	}
+
+	public boolean isWhitelistChannel(MessageChannel channel) {
+		return whitelistChannels.contains(channel.getId()) || whitelistChannels.size() == 0;
+	}
+
+	public boolean isUserAllowed(User user) {
+		return whitelistRoles.contains(UserRole.all) ||
+				whitelistRoles.contains(BotDB.getInstance().getUserRole(user));
+	}
+
+	public boolean canRunCommand(MessageReceivedEvent event) {
+		return isWhitelistChannel(event.getChannel()) && isUserAllowed(event.getAuthor());
 	}
 
 	public void sendPrivateMessage(User user, String msg) {

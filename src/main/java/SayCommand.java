@@ -2,11 +2,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class SayCommand extends Command {
-    public SayCommand(String... whitelistChannels) {
-    	super(whitelistChannels);
-    }
+    public SayCommand() {
+		super(Arrays.asList("720163524822958100"));
+	}
 
     @Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {

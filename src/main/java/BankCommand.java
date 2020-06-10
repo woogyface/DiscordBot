@@ -5,10 +5,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 public class BankCommand extends Command {
-    public BankCommand(String... whitelistChannels) {
-        super(whitelistChannels);
+    public BankCommand() {
+        super(Arrays.asList("720163487351046195"));
     }
 
     @Override
