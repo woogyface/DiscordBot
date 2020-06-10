@@ -91,12 +91,7 @@ public class JavaCommand extends Command {
         MessageChannel channel = event.getChannel();
 
         String msg = message.getContentDisplay();
-        int index = msg.indexOf("\n");
-        if(index == -1) {
-            sendMessage(channel, "Ungültige Eingabe");
-            return;
-        }
-        String command = msg.substring(0, index);
+        String command = msg.substring(0, "!java".length());
 
         if (event.isFromType(ChannelType.TEXT)) {
             if (command.equals("!java")) {
