@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class SayCommand extends Command {
     public SayCommand() {
-		super(Arrays.asList("720163524822958100"));
+		super(Arrays.asList("720163524822958100", "432981218246787085"));
 	}
 
     @Override

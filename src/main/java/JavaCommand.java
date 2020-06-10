@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class JavaCommand extends Command {
     public JavaCommand() {
-        super(Arrays.asList("720163524822958100"));
+        super(Arrays.asList(UserRole.owner), Arrays.asList("720163524822958100"));
     }
 
     private Path saveSource(String source) throws IOException {

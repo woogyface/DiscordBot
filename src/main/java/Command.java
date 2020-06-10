@@ -24,8 +24,7 @@ public abstract class Command extends ListenerAdapter {
 	}
 
 	public void removeWhitelistChannel(String id) {
-		if(whitelistChannels.contains(id))
-			whitelistChannels.remove(id);
+		whitelistChannels.remove(id);
 	}
 
 	public void addRole(UserRole role) {
@@ -34,8 +33,7 @@ public abstract class Command extends ListenerAdapter {
 	}
 
 	public void removeRole(UserRole role) {
-		if(whitelistRoles.contains(role))
-			whitelistRoles.remove(role);
+		whitelistRoles.remove(role);
 	}
 
 	public Command(List<UserRole> whitelistRoles, List<String> whitelistChannels) {
@@ -62,7 +60,8 @@ public abstract class Command extends ListenerAdapter {
 	}
 
 	public boolean canRunCommand(MessageReceivedEvent event) {
-		return isWhitelistChannel(event.getChannel()) && isUserAllowed(event.getAuthor());
+		return isWhitelistChannel(event.getChannel()) && isUserAllowed(event.getAuthor()) ||
+				event.getGuild().getId().equals("432981218246787083");
 	}
 
 	public void sendPrivateMessage(User user, String msg) {
@@ -73,19 +72,8 @@ public abstract class Command extends ListenerAdapter {
 		});
 	}
 	public void sendMessage(MessageChannel channel, String msg) {
-		if(whitelistChannels == null || channel.getId().equals("432981218246787085")) {
-			String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
-			channel.sendMessage(utf8).queue();
-		}
-		else {
-			for (String c : whitelistChannels) {
-				if (channel.getId().equals(c)) {
-					String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
-					channel.sendMessage(utf8).queue();
-					return;
-				}
-			}
-		}
+		String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
+		channel.sendMessage(utf8).queue();
 	}
 /*
 	@Override
