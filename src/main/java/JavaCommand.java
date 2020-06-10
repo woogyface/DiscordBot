@@ -14,7 +14,6 @@ import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +30,10 @@ public class Discord {
 */
 
 public class JavaCommand extends Command {
+    public JavaCommand(String... whitelistChannels) {
+        super(whitelistChannels);
+    }
+
     private Path saveSource(String source) throws IOException {
         String tmpProperty = System.getProperty("java.io.tmpdir");
         Path sourcePath = Paths.get(tmpProperty, "Discord.java");
@@ -92,7 +95,7 @@ public class JavaCommand extends Command {
 
         if (event.isFromType(ChannelType.TEXT)) {
             if (command.equals("!java")) {
-                System.out.println(msg);
+                //System.out.println(msg);
                 Pattern pattern = Pattern.compile("!java\\s```Java\\s(?<source>.*)```", Pattern.DOTALL);
                 Matcher matcher = pattern.matcher(msg);
                 if(matcher.find()) {

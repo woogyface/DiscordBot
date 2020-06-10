@@ -7,7 +7,11 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class RoleCommand extends Command {
-	@Override
+    public RoleCommand(String... whitelistChannels) {
+		super(whitelistChannels);
+	}
+
+    @Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 		User user = event.getAuthor();
 		if (user.isBot())

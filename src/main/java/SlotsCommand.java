@@ -7,7 +7,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import javax.annotation.Nonnull;
 
 public class SlotsCommand extends Command {
-	@Override
+    public SlotsCommand(String... whitelistChannels) {
+		super(whitelistChannels);
+	}
+
+    @Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 
 		User user = event.getAuthor();

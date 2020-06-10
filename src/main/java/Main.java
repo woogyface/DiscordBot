@@ -32,12 +32,12 @@ public class Main {
 		try {
 			JDA jda = new JDABuilder(discordApiKey)
 				.addEventListeners(
-						new SayCommand(),
-						new RegisterCommand(),
-						new RoleCommand(),
-						new BankCommand(),
-						new SlotsCommand(),
-						new JavaCommand()
+						new SayCommand("432981218246787085"),
+						new RegisterCommand("432981218246787085"),
+						new RoleCommand("432981218246787085"),
+						new BankCommand("432981218246787085"),
+						new SlotsCommand("432981218246787085"),
+						new JavaCommand("432981218246787085")
 				)
 				.build();
 

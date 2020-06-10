@@ -7,6 +7,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import javax.annotation.Nonnull;
 
 public class BankCommand extends Command {
+    public BankCommand(String... whitelistChannels) {
+        super(whitelistChannels);
+    }
+
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         User user = event.getAuthor();
