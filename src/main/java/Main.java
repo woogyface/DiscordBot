@@ -38,7 +38,8 @@ public class Main {
 						new RoleCommand(),
 						new BankCommand(),
 						new SlotsCommand(),
-						new JavaCommand()
+						new JavaCommand(),
+						new SchoolCommand()
 				)
 				.build();
 
