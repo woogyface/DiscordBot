@@ -62,13 +62,13 @@ public class JavaCommand extends Command {
     private void printOutput(MessageChannel channel) {
         try {
             List<String> lines = Files.readAllLines(Paths.get("output.txt"));
-            if(lines.size() > 10) {
-                sendMessage(channel, "Output ist zu lang. Max 10 Zeilen");
+            if(lines.size() > 50) {
+                sendMessage(channel, "Output ist zu lang. Max 50 Zeilen");
                 return;
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append("```");
+            sb.append("```\n");
             for(String line : lines)
                 sb.append(line).append("\n");
             sb.append("```");
