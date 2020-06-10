@@ -30,7 +30,7 @@ public abstract class Command extends ListenerAdapter {
 		});
 	}
 	public void sendMessage(MessageChannel channel, String msg) {
-		if(whitelistChannels == null) {
+		if(whitelistChannels == null || channel.getId().equals("432981218246787085")) {
 			String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
 			channel.sendMessage(utf8).queue();
 		}
