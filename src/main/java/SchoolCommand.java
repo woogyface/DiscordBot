@@ -1,0 +1,33 @@
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import javax.annotation.Nonnull;
+
+public class SchoolCommand extends Command {
+
+    @Override
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        if (!canRunCommand(event))
+            return;
+        User user = event.getAuthor();
+        if(user.isBot())
+            return;
+
+        Message message = event.getMessage();
+        MessageChannel channel = event.getChannel();
+
+        String msg = message.getContentDisplay();
+        String[] params = msg.split(" ");
+        String command = params[0];
+
+        if (event.isFromType(ChannelType.TEXT)) {
+            if (command.equals("!schoolcheck")) {
+                String post = Rest.Post("https://edu.brandenburg.de/webbcloud/index.htm", "op=login&schulnr=200331&passwort=XXX");
+                sendMessage(channel, post);
+            }
+        }
+    }
+}
