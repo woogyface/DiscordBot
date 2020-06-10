@@ -14,6 +14,8 @@ public class BankCommand extends Command {
 
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        if(!canRunCommand(event))
+            return;
         User user = event.getAuthor();
         if(user.isBot())
             return;
