@@ -68,12 +68,22 @@ public abstract class Command extends ListenerAdapter {
 		user.openPrivateChannel().queue((channel) ->
 		{
 			String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
-			channel.sendMessageFormat(utf8).queue();
+			channel.sendMessage(utf8).queue();
 		});
 	}
+
+	public void sendPrivateMessage(User user, MessageEmbed msg) {
+		user.openPrivateChannel().queue((channel) ->
+				channel.sendMessage(msg).queue());
+	}
+
 	public void sendMessage(MessageChannel channel, String msg) {
 		String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
 		channel.sendMessage(utf8).queue();
+	}
+
+	public void sendMessage(MessageChannel channel, MessageEmbed msg) {
+		channel.sendMessage(msg).queue();
 	}
 /*
 	@Override

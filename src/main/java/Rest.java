@@ -1,158 +1,99 @@
 import org.apache.commons.collections4.KeyValue;
+import org.sqlite.util.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Rest {
-	public static RestResponse get(String url) {
-		BufferedReader reader = null;
-		StringBuilder sb = null;
-		String response = null;
-		Map<String, List<String>> headers = new HashMap<>();
-		try {
-			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
-			connection.setRequestMethod("GET");
+	private Map<String, String> queryParam = new HashMap<>();
+	private Map<String, String> header = new HashMap<>();
 
-			reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			sb = new StringBuilder();
-
-			String input;
-			while((input = reader.readLine()) != null) {
-				sb.append(input);
-			}
-			response = sb.toString();
-			headers = connection.getHeaderFields();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(reader != null)
-					reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return new RestResponse(response, headers);
+	public void addQueryParam(String key, String value) {
+		queryParam.put(key, value);
 	}
 
-	public static RestResponse post(String url, String data) {
-		BufferedReader reader = null;
-		StringBuilder sb = null;
-		String response = null;
-		Map<String, List<String>> headers = new HashMap<>();
-		try {
-			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
-			connection.setRequestMethod("POST");
+	public void addHeader(String key, String value) {
+		header.put(key, value);
+	}
+
+	private void setHeader(HttpsURLConnection connection) {
+		if(header != null && header.size() > 0) {
+			for(Map.Entry<String, String> entry : header.entrySet()) {
+				connection.setRequestProperty(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	private void setQueryParam(HttpsURLConnection connection) {
+		if(queryParam != null && queryParam.size() > 0) {
 			connection.setDoOutput(true);
 
-			DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream());
-			dataStream.writeBytes(data);
-			dataStream.flush();
-			dataStream.close();
-
-			reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			sb = new StringBuilder();
-
-			String input;
-			while((input = reader.readLine()) != null) {
-				sb.append(input);
-			}
-			response = sb.toString();
-			headers = connection.getHeaderFields();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
 			try {
-				if(reader != null)
-					reader.close();
+				StringBuilder sb = new StringBuilder();
+				for (Map.Entry<String, String> entry : queryParam.entrySet()) {
+					sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+					sb.append("=");
+					sb.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+					sb.append("&");
+				}
+				String params = sb.toString();
+				params = params.substring(0, params.length() - 1);
+
+				DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream());
+				dataStream.writeBytes(params);
+				dataStream.flush();
+				dataStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
-		return new RestResponse(response, headers);
 	}
 
-	public static RestResponse request(String method, String url, String data) {
+	public String request(String method, String url) {
 		BufferedReader reader = null;
-		StringBuilder sb = null;
 		String response = null;
-		Map<String, List<String>> headers = new HashMap<>();
 		try {
-			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
-			connection.setRequestMethod(method);
-			connection.setDoOutput(true);
-
-			DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream());
-			dataStream.writeBytes(data);
-			dataStream.flush();
-			dataStream.close();
-
-			reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			sb = new StringBuilder();
-
-			String input;
-			while((input = reader.readLine()) != null) {
-				sb.append(input);
-			}
-			response = sb.toString();
-			headers = connection.getHeaderFields();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(reader != null)
-					reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return new RestResponse(response, headers);
-	}
-
-	public static RestResponse request(String method, String url, String data, String... headerProperties) {
-		BufferedReader reader = null;
-		StringBuilder sb = null;
-		String response = null;
-		Map<String, List<String>> headers = new HashMap<>();
-		try {
-			HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
+			HttpsURLConnection connection = (HttpsURLConnection)new URL(url).openConnection();
 			connection.setRequestMethod(method);
 			connection.setUseCaches(false);
-			connection.setDoOutput(true);
-			connection.setDoInput(true);
 
-			for(int i = 1; i < headerProperties.length; i++) {
-				connection.setRequestProperty(headerProperties[i - 1], headerProperties[i]);
+			setHeader(connection);
+			setQueryParam(connection);
+
+			String cookieHeader = connection.getHeaderField("Set-Cookie");
+			List<HttpCookie> cookiesList = HttpCookie.parse(cookieHeader);
+			CookieManager cookieManager = new CookieManager();
+			cookiesList.forEach(cookie -> cookieManager.getCookieStore().add(null, cookie));
+
+			if(cookieManager.getCookieStore().getCookies().size() > 0) {
+				connection.disconnect();
+				connection = (HttpsURLConnection) new URL(url).openConnection();
+				List<String> cookieString = new ArrayList<>();
+				for (HttpCookie c : cookieManager.getCookieStore().getCookies())
+					cookieString.add(c.toString());
+				connection.setRequestProperty("Cookie", StringUtils.join(cookieString, ";"));
+
+				setHeader(connection);
+				setQueryParam(connection);
 			}
 
-			DataOutputStream dataStream = new DataOutputStream(connection.getOutputStream());
-			dataStream.writeBytes(data);
-			dataStream.flush();
-			dataStream.close();
-
 			reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			sb = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 
 			String input;
 			while((input = reader.readLine()) != null) {
 				sb.append(input);
+				sb.append("\n");
 			}
-			response = sb.toString();
-			headers = connection.getHeaderFields();
 			reader.close();
+
+			response = sb.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -164,6 +105,6 @@ public class Rest {
 			}
 		}
 
-		return new RestResponse(response, headers);
+		return response;
 	}
 }
