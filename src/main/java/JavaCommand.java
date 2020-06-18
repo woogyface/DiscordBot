@@ -86,6 +86,7 @@ public class JavaCommand extends Command {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         if(!canRunCommand(event))
             return;
+
         User user = event.getAuthor();
         if (user.isBot())
             return;
@@ -94,6 +95,9 @@ public class JavaCommand extends Command {
         MessageChannel channel = event.getChannel();
 
         String msg = message.getContentDisplay();
+        if(msg.length() < "!java".length())
+            return;
+
         String command = msg.substring(0, "!java".length());
 
         if (event.isFromType(ChannelType.TEXT)) {
