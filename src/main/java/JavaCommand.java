@@ -68,6 +68,7 @@ public class JavaCommand extends Command {
             List<String> lines = Files.readAllLines(Paths.get("output.txt"));
             if(lines.size() > 10 || (lines.size() > 0 && lines.get(0).length() > 100)) {
                 channel.sendFile(new File("output.txt")).queue();
+                Files.writeString(Paths.get("output.txt"), "");
                 return;
             }
 
@@ -77,6 +78,8 @@ public class JavaCommand extends Command {
                 sb.append(line).append("\n");
             sb.append("```");
             sendMessage(channel, sb.toString());
+
+            Files.writeString(Paths.get("output.txt"), "");
         } catch (IOException e) {
             e.printStackTrace();
         }
