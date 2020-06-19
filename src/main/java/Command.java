@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.EmoteManager;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -94,6 +95,15 @@ public abstract class Command extends ListenerAdapter {
 	public void sendFile(MessageChannel channel, File file, String msg) {
 		String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
 		channel.sendMessage(utf8).addFile(file).queue();
+	}
+
+	public void sendFileWithReaction(MessageChannel channel, File file, String... reaction) {
+		channel.sendFile(file).queue(message ->
+		{
+			for(String r : reaction) {
+				message.addReaction(r).queue();
+			}
+		});
 	}
 /*
 	@Override

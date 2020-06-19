@@ -1,6 +1,7 @@
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
@@ -45,6 +46,16 @@ public class TestCommand extends Command {
 	}
 
 	@Override
+	public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {
+		super.onMessageReactionAdd(event);
+
+		MessageChannel channel = event.getChannel();
+		MessageReaction react = event.getReaction();
+
+		System.out.println(react.toString());
+	}
+
+	@Override
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 		if(!canRunCommand(event))
 			return;
@@ -82,7 +93,19 @@ public class TestCommand extends Command {
 				String filename = filenameFromDateTime();
 				saveImage(img, filename);
 
-				sendFile(channel, loadImage(filename), "Dein Bild:");
+				sendFileWithReaction(channel, loadImage(filename),
+						"U+0031 U+FE0F U+20E3",
+						"U+0032 U+FE0F U+20E3",
+						"U+0033 U+FE0F U+20E3",
+						"U+0034 U+FE0F U+20E3",
+						"U+0035 U+FE0F U+20E3",
+						"U+0036 U+FE0F U+20E3",
+						"U+0037 U+FE0F U+20E3",
+						"U+0038 U+FE0F U+20E3",
+						"U+0039 U+FE0F U+20E3");
+			}
+			else if(command.equals("!react")) {
+				message.addReaction("U+0031 U+FE0F U+20E3").queue();
 			}
 		}
 		else if (event.isFromType(ChannelType.PRIVATE)) //If this message was sent to a PrivateChannel
