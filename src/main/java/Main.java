@@ -39,7 +39,8 @@ public class Main {
 						new BankCommand(),
 						new SlotsCommand(),
 						new JavaCommand(),
-						new SchoolCommand()
+						new SchoolCommand(),
+						new TestCommand()
 				)
 				.build();
 

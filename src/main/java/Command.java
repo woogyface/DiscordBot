@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -84,6 +85,15 @@ public abstract class Command extends ListenerAdapter {
 
 	public void sendMessage(MessageChannel channel, MessageEmbed msg) {
 		channel.sendMessage(msg).queue();
+	}
+
+	public void sendFile(MessageChannel channel, File file) {
+		channel.sendFile(file).queue();
+	}
+
+	public void sendFile(MessageChannel channel, File file, String msg) {
+		String utf8 = new String(msg.getBytes(), StandardCharsets.UTF_8);
+		channel.sendMessage(utf8).addFile(file).queue();
 	}
 /*
 	@Override
